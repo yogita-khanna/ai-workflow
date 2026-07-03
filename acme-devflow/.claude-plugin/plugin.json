@@ -1,0 +1,70 @@
+{
+  "name": "acme-devflow",
+  "version": "1.0.0",
+  "description": "Agentic spec-driven development pipeline plugin.",
+  "author": "Acme Corp",
+  "skills": [
+    {
+      "name": "using-devflow",
+      "path": "skills/using-devflow/SKILL.md",
+      "description": "Bootstrap check: loaded before any action to ensure the agent uses the pipeline rather than cowboy-coding."
+    },
+    {
+      "name": "classify-ticket",
+      "path": "skills/classify-ticket/SKILL.md",
+      "description": "Evaluates risk, reversibility, and precedent for a ticket."
+    },
+    {
+      "name": "writing-a-spec",
+      "path": "skills/writing-a-spec/SKILL.md",
+      "description": "Generates a delta spec (Given/When/Then), design docs, and a TDD checklist."
+    },
+    {
+      "name": "using-worktrees",
+      "path": "skills/using-worktrees/SKILL.md",
+      "description": "Creates, names, and cleans up git worktrees for isolated development."
+    },
+    {
+      "name": "tdd-loop",
+      "path": "skills/tdd-loop/SKILL.md",
+      "description": "Red-before-green TDD execution discipline with a hard retry cap."
+    },
+    {
+      "name": "finishing-a-branch",
+      "path": "skills/finishing-a-branch/SKILL.md",
+      "description": "Committing, pushing, and opening a PR. Explicitly forbids self-merging."
+    },
+    {
+      "name": "reviewing-a-pr",
+      "path": "skills/reviewing-a-pr/SKILL.md",
+      "description": "How to perform a code review and how to resolve feedback."
+    },
+    {
+      "name": "picking-a-jira-bug",
+      "path": "skills/picking-a-jira-bug/SKILL.md",
+      "description": "Guidelines for a human to select a bug from the Jira board."
+    }
+  ],
+  "commands": [
+    {
+      "name": "/devflow:propose",
+      "description": "Triggers ticket classification and sets up the spec folder.",
+      "executable": "node spec-framework/commands/propose.js"
+    },
+    {
+      "name": "/devflow:apply",
+      "description": "Executes the TDD loop on a frozen spec.",
+      "executable": "node spec-framework/commands/apply.js"
+    },
+    {
+      "name": "/devflow:archive",
+      "description": "Archives the spec after a successful merge.",
+      "executable": "node spec-framework/commands/archive.js"
+    },
+    {
+      "name": "/devflow:explore",
+      "description": "Sandbox command for discussing ideas without committing to a proposal.",
+      "executable": "node spec-framework/commands/explore.js"
+    }
+  ]
+}

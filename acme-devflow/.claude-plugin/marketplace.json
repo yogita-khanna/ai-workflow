@@ -1,0 +1,9 @@
+{
+  "name": "acme-devflow",
+  "version": "1.0.0",
+  "description": "Acme's internal open-source spec-driven development pipeline plugin.",
+  "publisher": "acme-marketplace",
+  "tags": ["workflow", "tdd", "spec-driven", "pipeline"],
+  "repository": "https://github.com/acme-corp/acme-devflow",
+  "license": "MIT"
+}

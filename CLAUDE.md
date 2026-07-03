@@ -1,0 +1,136 @@
+# CLAUDE.md Template — Standard Engineering Baseline
+# ─────────────────────────────────────────────────────────────────────────────
+# INSTRUCTIONS FOR USE:
+# Copy this file to the root of every new repository as CLAUDE.md
+# Fill in all <PLACEHOLDER> values before your first commit.
+# This file is READ FIRST by every AI agent working in this repo.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Project: Acme SaaS Platform (Next.js + NestJS)
+
+## What This Is
+The core web platform and backend API powering the Acme SaaS product.
+
+## Stack
+- **Monorepo**: npm workspaces + Turborepo
+- **Frontend**: Next.js (App Router) / React
+- **Backend**: NestJS (TypeScript)
+- **Database**: PostgreSQL (No ORM, raw `pg` driver)
+- **Test Runner**: Jest (Backend) / Playwright & RTL (Frontend)
+- **Linter**: ESLint / Prettier
+
+---
+
+## 1. Architecture Overview (Monorepo)
+This repository is a Turborepo monorepo. Agents must respect strict application boundaries and always use `--filter` when running scripts.
+
+### Key Directories
+```text
+<project-root>/
+├── apps/
+│   ├── web/            # Next.js App Router frontend
+│   └── api/            # NestJS backend
+├── packages/           # Shared types, UI components, and configs
+├── docs/               # Architecture docs and ADRs
+└── .agents/            # Agent customizations (skills, rules)
+```
+
+---
+
+## 2. Frontend Boundaries (Next.js App Router)
+- **Default to RSC**: All components are React Server Components by default.
+- **Client Components**: Use the `"use client"` directive strictly only when React hooks (useState, useEffect) or browser APIs are required.
+- **Data Leaks**: NEVER pass sensitive backend data or secrets as props from a Server Component to a Client Component.
+- **Env Vars**: Browser-accessible environment variables must be prefixed with `NEXT_PUBLIC_`.
+
+---
+
+## 3. Backend Boundaries (NestJS)
+Enforce a strict 3-tier Dependency Injection (DI) architecture:
+- **Controllers**: Thin routing layer. Only handles HTTP parsing, Guards (`@Roles()`), and DTO validation (`class-validator`). No business logic.
+- **Services**: Core business logic layer.
+- **Repositories**: Data access layer. This is the ONLY layer permitted to inject and use the database pool.
+
+---
+
+## 4. Data Layer & Security (Raw SQL)
+- **NO ORMs ALLOWED**: Do not use Prisma, TypeORM, or Sequelize. All queries must be written in raw SQL.
+- **SQL Injection Prevention**: All queries using the `pg` driver MUST use parameterized inputs (e.g., `$1, $2`). String concatenation (`+`) or template literals (`${}`) inside SQL strings will result in instant PR rejection.
+- **Migrations**: We use `node-pg-migrate` with pure `.sql` files. Every `UP` migration MUST be accompanied by a safe, tested `DOWN` migration.
+
+---
+
+## 5. Testing Matrix
+- **Backend Unit Tests**: Jest. Located next to source files (`*.spec.ts`). You MUST completely mock the database repository layer (e.g., mock `pg.Pool`).
+- **Backend Integration Tests**: SKIPPED. Do not write integration tests or use Testcontainers since Docker is not available in this environment.
+- **Frontend Tests**: React Testing Library (RTL) for component unit tests (`*.test.tsx`).
+
+
+---
+
+## 6. Development Commands
+```bash
+# Install dependencies
+npm install
+
+# Run tests (scoping to workspace saves tokens)
+npx turbo run test --filter=<workspace-name>
+
+# Run linter
+npx turbo run lint
+
+# Start dev server
+npx turbo run dev
+
+# Build for production
+npx turbo run build
+```
+
+---
+
+## 7. Elite-Level Coding Standards & Logic
+
+### 7.1 TypeScript & Type Safety (Strict Mode Enforcement)
+- **Absolute ban on `any` and `@ts-ignore`**: You must use `unknown` and implement type narrowing/type guards.
+- **Discriminated Unions**: For complex state or API responses, use discriminated unions with exhaustive `switch` statements to guarantee type safety at compile time.
+- **DTOs vs Interfaces**: Use `class` with `class-validator` for runtime boundary validation (API inputs). Use `type` or `interface` for internal data structures.
+
+### 7.2 Next.js Architecture & State Logic
+- **URL-First State Management**: Prefer storing UI state in URL Search Parameters rather than `useState`. This ensures deep-linking and SSR compatibility.
+- **Data Mutation**: Use Server Actions for form submissions and simple mutations. Use Route Handlers (`/api/...`) only when webhooks or external integrations require it.
+- **Cache Invalidation**: Every Server Action that mutates data MUST explicitly call `revalidatePath` or `revalidateTag`.
+
+### 7.3 NestJS Business Logic & Database Consistency
+- **Transactional Consistency**: If a NestJS Service performs more than one write operation (e.g., creating a user AND assigning a role), it **MUST** be wrapped in a single Postgres `BEGIN ... COMMIT` transaction via `pg.Pool`.
+- **Domain Exceptions**: Do not throw raw `HttpException` from deep inside a Repository. Repositories throw Domain Exceptions (e.g., `UserNotFoundException`), which the Controller maps to a `404 NotFoundException`.
+
+### 7.4 Zero-Trust Security & Auth Logic
+- **Hashing**: `bcrypt` is banned. Argon2 MUST be used for all password hashing.
+- **Tokens**: JWTs must NEVER be stored in `localStorage`. They must be issued as `HttpOnly`, `Secure`, `SameSite=Strict` cookies.
+- **Refresh Token Rotation**: Explicitly enforce refresh token rotation with immediate session revocation upon reuse detection.
+- **CSRF**: CSRF protection is mandatory for all non-GET requests.
+
+---
+
+## 8. What NOT to Do (Hard Rules for Agents)
+- **Do NOT** modify `apps/api/migrations/` without an explicit task saying so.
+- **Do NOT** install new dependencies without mentioning it in the PR description.
+- **Do NOT** rename existing API endpoint paths (breaking change — requires RFC).
+- **Do NOT** commit secrets, tokens, or credentials in any form.
+- **Do NOT** merge to `dev` or `main` directly — all changes go through a PR.
+
+---
+
+## 9. Human Review Requirements
+The following changes ALWAYS require a human to review (agent cannot self-merge):
+- Any change to authentication or authorization logic.
+- Any database schema change.
+- Any change to public API contracts.
+- Any dependency version bump.
+
+---
+
+## Architecture Decision Records (ADRs)
+All significant architecture decisions are logged in `docs/decisions/`.
+Format: `docs/decisions/ADR-<number>-<title>.md`
+Read existing ADRs before proposing changes to core architecture.
