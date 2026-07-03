@@ -5,12 +5,21 @@ const Put = () => (target: any, propertyKey: string, descriptor: PropertyDescrip
 const Req = () => (target: any, propertyKey: string, parameterIndex: number) => {};
 const Body = () => (target: any, propertyKey: string, parameterIndex: number) => {};
 
+import { IsString, IsOptional, IsUrl } from 'class-validator';
 import { UserProfileService } from '../services/user-profile.service';
 
 export class UpdateProfileDto {
-  first_name!: string;
-  last_name!: string;
-  avatar_url!: string;
+  @IsString()
+  @IsOptional()
+  first_name?: string;
+
+  @IsString()
+  @IsOptional()
+  last_name?: string;
+
+  @IsUrl()
+  @IsOptional()
+  avatar_url?: string;
 }
 
 @Controller('profile')
@@ -34,9 +43,9 @@ export class UserProfileController {
     }
     return this.userProfileService.updateProfile(
       userId,
-      updateProfileDto.first_name,
-      updateProfileDto.last_name,
-      updateProfileDto.avatar_url
+      updateProfileDto.first_name || '',
+      updateProfileDto.last_name || '',
+      updateProfileDto.avatar_url || ''
     );
   }
 }
