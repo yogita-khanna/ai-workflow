@@ -23,7 +23,7 @@ export class WebhooksController {
   constructor(private readonly webhooksService: WebhooksService) {}
 
   @Get()
-  async getWebhooks() { // INTENTIONAL MISTAKE: missing return type
+  async getWebhooks(): Promise<Webhook[]> { // FIXED: added explicit return type
     return this.webhooksService.getWebhooks();
   }
 
