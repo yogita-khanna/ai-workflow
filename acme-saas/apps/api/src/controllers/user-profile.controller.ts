@@ -4,6 +4,8 @@ const Get = () => (target: any, propertyKey: string, descriptor: PropertyDescrip
 const Put = () => (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {};
 const Req = () => (target: any, propertyKey: string, parameterIndex: number) => {};
 const Body = () => (target: any, propertyKey: string, parameterIndex: number) => {};
+const UseGuards = (guard: any) => (target: any) => {};
+const JwtAuthGuard = class {};
 
 import { IsString, IsOptional, IsUrl } from 'class-validator';
 import { UserProfileService } from '../services/user-profile.service';
@@ -23,6 +25,7 @@ export class UpdateProfileDto {
 }
 
 @Controller('profile')
+@UseGuards(JwtAuthGuard)
 export class UserProfileController {
   constructor(private readonly userProfileService: UserProfileService) {}
 
