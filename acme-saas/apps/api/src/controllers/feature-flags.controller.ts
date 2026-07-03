@@ -8,6 +8,7 @@ const JwtAuthGuard = class {};
 
 import { IsString, IsBoolean } from 'class-validator';
 import { FeatureFlagsService } from '../services/feature-flags.service';
+import { FeatureFlag } from '../repositories/feature-flags.repository';
 
 export class SetFeatureFlagDto {
   @IsString()
@@ -23,7 +24,7 @@ export class FeatureFlagsController {
   constructor(private readonly featureFlagsService: FeatureFlagsService) {}
 
   @Get()
-  async getAllFlags() {
+  async getAllFlags(): Promise<FeatureFlag[]> {
     return this.featureFlagsService.getAllFlags();
   }
 
