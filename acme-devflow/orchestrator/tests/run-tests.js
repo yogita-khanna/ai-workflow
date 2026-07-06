@@ -67,8 +67,14 @@ async function run() {
     assert(designResult === false, 'orch.design() should fail when spec is not approved');
     assert(orch.ticket.state === 'SPEC_WRITING', 'State should remain SPEC_WRITING');
 
-    // 4. Approve Spec (Checkpoint #1)
-    orch.approveSpec();
+    // 4. RBAC: Spec Approval (Checkpoint #1)
+    console.log('\nTesting RBAC spec approval gates...');
+    const specUnauthApprove = orch.approveSpec('john');
+    assert(specUnauthApprove === false, 'john should be blocked from approving spec');
+    assert(orch.ticket.specApproved === false, 'specApproved should remain false');
+
+    const specAuthApprove = orch.approveSpec('alice');
+    assert(specAuthApprove === true, 'alice should succeed in approving spec');
     assert(orch.ticket.specApproved === true, 'specApproved should be true');
     assert(orch.ticket.state === 'SPEC_APPROVED', 'State should transition to SPEC_APPROVED');
     const specContent = fs.readFileSync(path.join(ticketDir, 'spec.md'), 'utf8');
@@ -85,8 +91,14 @@ async function run() {
     assert(implementResult === false, 'orch.implement() should fail when design is not approved');
     assert(orch.ticket.state === 'DESIGN_DRAFTING', 'State should remain DESIGN_DRAFTING');
 
-    // 7. Approve Design (Checkpoint #2)
-    orch.approveDesign();
+    // 7. RBAC: Design Approval (Checkpoint #2)
+    console.log('\nTesting RBAC design approval gates...');
+    const designUnauthApprove = orch.approveDesign('john');
+    assert(designUnauthApprove === false, 'john should be blocked from approving design');
+    assert(orch.ticket.designApproved === false, 'designApproved should remain false');
+
+    const designAuthApprove = orch.approveDesign('bob');
+    assert(designAuthApprove === true, 'bob should succeed in approving design');
     assert(orch.ticket.designApproved === true, 'designApproved should be true');
     assert(orch.ticket.state === 'DESIGN_APPROVED', 'State should transition to DESIGN_APPROVED');
     const designContent = fs.readFileSync(path.join(ticketDir, 'design.md'), 'utf8');
@@ -108,8 +120,14 @@ async function run() {
     assert(docResult === false, 'orch.document() should fail when review is not approved');
     assert(orch.ticket.state === 'UNDER_REVIEW', 'State should remain UNDER_REVIEW');
 
-    // 11. Approve Review (Checkpoint #3)
-    orch.approveReview();
+    // 11. RBAC: Review Approval (Checkpoint #3)
+    console.log('\nTesting RBAC review approval gates...');
+    const reviewUnauthApprove = orch.approveReview('john');
+    assert(reviewUnauthApprove === false, 'john should be blocked from signing off review');
+    assert(orch.ticket.reviewApproved === false, 'reviewApproved should remain false');
+
+    const reviewAuthApprove = orch.approveReview('charlie');
+    assert(reviewAuthApprove === true, 'charlie should succeed in signing off review');
     assert(orch.ticket.reviewApproved === true, 'reviewApproved should be true');
     assert(orch.ticket.state === 'REVIEW_APPROVED', 'State should transition to REVIEW_APPROVED');
 
@@ -124,9 +142,14 @@ async function run() {
     assert(archiveResult === false, 'orch.archive() should fail when PR is not merged');
     assert(orch.ticket.state === 'DOCS_COMPLETE', 'State should remain DOCS_COMPLETE');
 
-    // 14. Merge Phase (Checkpoint #4 Approval)
-    const mergeResult = orch.merge();
-    assert(mergeResult === true, 'orch.merge() should succeed when docs are complete');
+    // 14. RBAC: Merge Approval (Checkpoint #4 Approval)
+    console.log('\nTesting RBAC merge approval gates...');
+    const mergeUnauthApprove = orch.merge('john');
+    assert(mergeUnauthApprove === false, 'john should be blocked from merging PR');
+    assert(orch.ticket.prMerged === false, 'prMerged should remain false');
+
+    const mergeAuthApprove = orch.merge('delta');
+    assert(mergeAuthApprove === true, 'delta should succeed in merging PR');
     assert(orch.ticket.prMerged === true, 'prMerged should be true');
     assert(orch.ticket.state === 'MERGED', 'State should transition to MERGED');
 

@@ -7,8 +7,8 @@ _INSTRUCTION TO ARCHITECT: This document dictates exact implementation bounds. A
 - Ticket/Feature: <Ticket ID>
 - Architect: <Architect Agent Role>
 - Status: Draft / Approved (Checkpoint #2)
-- Related Spec: [SPEC.md](file:///path/to/spec.md)
-- ADR References: [ADR-001](file:///path/to/adr.md)
+- Related Spec: [spec.md](spec.md)
+- ADR References: [ADR-001](adr.md)
 
 ## 1. Traceability Map
 

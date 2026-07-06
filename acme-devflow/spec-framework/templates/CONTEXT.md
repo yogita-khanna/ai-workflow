@@ -24,6 +24,6 @@ This is a living context document for agents and developers working in this repo
 
 ## Index of Context Records
 
-- **Specs Directory:** [/docs/context/specs/](file:///docs/context/specs/)
-- **ADRs Directory:** [/docs/context/adrs/](file:///docs/context/adrs/)
-- **Agent Session Logs:** [/docs/context/sessions/](file:///docs/context/sessions/)
+- **Specs Directory:** [docs/context/specs/](docs/context/specs/)
+- **ADRs Directory:** [docs/context/adrs/](docs/context/adrs/)
+- **Agent Session Logs:** [docs/context/sessions/](docs/context/sessions/)

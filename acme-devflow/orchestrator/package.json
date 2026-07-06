@@ -6,5 +6,8 @@
   "scripts": {
     "test": "node tests/run-tests.js"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
 }

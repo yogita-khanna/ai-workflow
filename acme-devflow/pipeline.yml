@@ -1,0 +1,76 @@
+phases:
+  - phase: 1
+    name: "Discovery & Framing"
+    state: "INTAKE"
+    agent: "pm-agent"
+    skill: "classify-ticket"
+
+  - phase: 2
+    name: "Spec Writing"
+    state: "SPEC_WRITING"
+    agent: "spec-agent"
+    skill: "writing-a-spec"
+    checkpoint:
+      requires: "specApproved"
+      permission: "approve:spec"
+      nextState: "SPEC_APPROVED"
+
+  - phase: 3
+    name: "Technical Design"
+    state: "DESIGN_DRAFTING"
+    agent: "architect-agent"
+    skill: "writing-a-spec"
+    checkpoint:
+      requires: "designApproved"
+      permission: "approve:design"
+      nextState: "DESIGN_APPROVED"
+
+  - phase: 4
+    name: "Task Breakdown"
+    state: "DESIGN_APPROVED"
+    agent: "planner-agent"
+    skill: "writing-a-spec"
+
+  - phase: 5
+    name: "Implementation"
+    state: "DESIGN_APPROVED"
+    agent: "coder-agent"
+    skill: "tdd-loop"
+
+  - phase: 6
+    name: "Self-Review & Tests"
+    state: "IMPLEMENTED"
+    agent: "test-agent"
+    skill: "tdd-loop"
+
+  - phase: 7
+    name: "Code Review"
+    state: "UNDER_REVIEW"
+    agent: "reviewer-agent"
+    skill: "reviewing-a-pr"
+    checkpoint:
+      requires: "reviewApproved"
+      permission: "approve:review"
+      nextState: "REVIEW_APPROVED"
+
+  - phase: 8
+    name: "Documentation"
+    state: "REVIEW_APPROVED"
+    agent: "docs-agent"
+    skill: "documenting-changes"
+
+  - phase: 9
+    name: "PR & CI"
+    state: "DOCS_COMPLETE"
+    agent: "coder-agent"
+    skill: "finishing-a-branch"
+    checkpoint:
+      requires: "prMerged"
+      permission: "approve:merge"
+      nextState: "MERGED"
+
+  - phase: 10
+    name: "Merge & Context Archive"
+    state: "MERGED"
+    agent: "context-agent"
+    skill: "context-preservation"

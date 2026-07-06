@@ -1,0 +1,7 @@
+{
+  "markdown.validate.enabled": false,
+  "markdownlint.enable": false,
+  "markdownlint.config": {
+    "default": false
+  }
+}

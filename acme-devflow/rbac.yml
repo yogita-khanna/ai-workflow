@@ -1,0 +1,25 @@
+roles:
+  PM:
+    permissions:
+      - "approve:spec"
+  Architect:
+    permissions:
+      - "approve:design"
+  Reviewer:
+    permissions:
+      - "approve:review"
+  ReleaseOwner:
+    permissions:
+      - "approve:merge"
+
+users:
+  alice:
+    role: "PM"
+  bob:
+    role: "Architect"
+  charlie:
+    role: "Reviewer"
+  delta:
+    role: "ReleaseOwner"
+  john:
+    role: "Developer"

@@ -107,7 +107,7 @@ if (fs.existsSync(contextPath)) {
 
 if (contextContent) {
   // Update or append to Active Initiatives & Specs section
-  const newSpecLink = `- [${ticketId}]: ${specTitle} — Spec: [/docs/context/specs/${ticketId.toLowerCase()}.md] — Status: Archived`;
+  const newSpecLink = `- [${ticketId}]: ${specTitle} — Spec: [docs/context/specs/${ticketId.toLowerCase()}.md](docs/context/specs/${ticketId.toLowerCase()}.md) — Status: Archived`;
   
   // Check if ticket already listed
   const ticketRegex = new RegExp(`^-\\s*\\[${ticketId}\\].*$`, 'm');
