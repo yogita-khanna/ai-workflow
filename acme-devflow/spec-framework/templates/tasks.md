@@ -33,7 +33,7 @@
 
 ## Phase 5: Self-Review & PR Validation
 *Prerequisite: Phase 4*
-- [ ] 5.1 Run `pnpm turbo run lint test build` (Must be 0 errors).
+- [ ] 5.1 Run `npx turbo run lint test build` (Must be 0 errors).
 - [ ] 5.2 Perform self-diff review against Spec Acceptance Criteria.
 - [ ] 5.3 Generate Agent Session Summary (`docs/context/sessions/<date>-<feature>.md`).
 - [ ] 5.4 Update Functional/Technical docs.

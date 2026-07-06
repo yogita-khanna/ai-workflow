@@ -3,7 +3,7 @@
 This is a living context document for agents and developers working in this repository. It provides a continuously-updated index of active features, architecture, and known constraints.
 
 ## Current Architecture Overview
-- **Structure:** Monorepo using `pnpm workspaces` + `Turborepo`.
+- **Structure:** Monorepo using `npm workspaces` + `Turborepo`.
 - **Frontend:** Next.js (App Router) in `apps/web/`.
 - **Backend:** NestJS (TypeScript) in `apps/api/`.
 - **Database:** PostgreSQL (No ORM, raw SQL using `pg` Pool).

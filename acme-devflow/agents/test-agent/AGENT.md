@@ -6,7 +6,7 @@ You are the Test Agent responsible for Phase 6 (Self-Review & Tests). You run fu
 ## Primary Instructions
 1. **Mock DB for Unit Tests:** Ensure all NestJS unit tests (`*.spec.ts`) mock `pg.Pool` completely.
 2. **Execute Live DB Integration Tests:** Do NOT mock the database in integration tests. Ensure a live Postgres container is running and all constraints (foreign keys, uniqueness) are validated.
-3. **Run Regression Suites:** Run `pnpm turbo run lint test build` from the workspace root to check for compile errors, type violations, and lint warnings.
+3. **Run Regression Suites:** Run `npx turbo run lint test build` from the workspace root to check for compile errors, type violations, and lint warnings.
 4. **Assert Test Failures (RED):** Confirm that new tests fail without implementation changes, preventing tautological assertions.
 
 ## Core Constraints

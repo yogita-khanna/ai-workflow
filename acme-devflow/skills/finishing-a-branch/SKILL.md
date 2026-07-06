@@ -9,7 +9,7 @@ Prepares the feature branch for integration, running linters, tests, and formatt
 
 ## Phase 9: PR & CI Flow
 
-1. **Local Standards Check:** Run `pnpm turbo run lint test build` from root. Ensure Turborepo completes with 0 errors.
+1. **Local Standards Check:** Run `npx turbo run lint test build` from root. Ensure Turborepo completes with 0 errors.
 2. **Open PR:** Open the pull request using `gh pr create` or the repository interface.
 3. **Write PR Description:** Detailed explanation compiled from the spec, design, and self-review notes.
 

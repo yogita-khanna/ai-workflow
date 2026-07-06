@@ -12,7 +12,7 @@
 <ONE_SENTENCE_DESCRIPTION>
 
 ## Stack
-- **Monorepo**: pnpm workspaces + Turborepo
+- **Monorepo**: npm workspaces + Turborepo
 - **Frontend**: Next.js (App Router) / React
 - **Backend**: NestJS (TypeScript)
 - **Database**: PostgreSQL (No ORM, raw `pg` driver)
@@ -70,19 +70,19 @@ Enforce a strict 3-tier Dependency Injection (DI) architecture:
 ## 6. Development Commands
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Run tests (scoping to workspace saves tokens)
-pnpm turbo run test --filter=<workspace-name>
+npx turbo run test --filter=<workspace-name>
 
 # Run linter
-pnpm turbo run lint
+npx turbo run lint
 
 # Start dev server
-pnpm turbo run dev
+npx turbo run dev
 
 # Build for production
-pnpm turbo run build
+npx turbo run build
 ```
 
 ---

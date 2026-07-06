@@ -48,7 +48,7 @@ const branchName = `agent/${ticketId.toLowerCase()}-impl`;
 console.log(`\nReady to transition to implementation branch: \x1b[32m${branchName}\x1b[0m`);
 console.log('Suggested Git actions:');
 console.log(`  git checkout -b ${branchName}`);
-console.log(`  pnpm install`);
+console.log(`  npm install`);
 
 console.log(`\n\x1b[32m[Phase 5: Implementation Started]\x1b[0m`);
 console.log(`Ensure you run the TDD loop (RED -> GREEN) for all checklist items in tickets/${ticketId}/tasks.md.`);

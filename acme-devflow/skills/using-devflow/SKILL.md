@@ -11,7 +11,7 @@ To minimize API token usage and prevent reading the entire project iteratively:
 3. **Rely on `CONTEXT.md` and `design.md`**: Do not re-explore the architecture. Read the root-level `CONTEXT.md` and the ticket's `design.md` to execute strictly against it.
 
 ## Overview
-This skill acts as the entry point and orchestrator for the AI DevFlow plugin. It helps the agent orient itself in our pnpm workspace and execute the strict 10-phase spec-driven workflow.
+This skill acts as the entry point and orchestrator for the AI DevFlow plugin. It helps the agent orient itself in our npm workspace and execute the strict 10-phase spec-driven workflow.
 
 ## The 10-Phase End-to-End Workflow
 
