@@ -5,6 +5,7 @@ roles:
   Architect:
     permissions:
       - "approve:design"
+      - "approve:swagger"
   Reviewer:
     permissions:
       - "approve:review"

@@ -64,6 +64,7 @@ class Orchestrator {
     this.ticket.state = 'INTAKE';
     this.ticket.specApproved = false;
     this.ticket.designApproved = false;
+    this.ticket.swaggerApproved = false;
     this.ticket.reviewApproved = false;
     this.ticket.prMerged = false;
     this.save();
@@ -201,26 +202,68 @@ class Orchestrator {
     return true;
   }
 
-  implement() {
+  swagger() {
     const p3 = getPhaseConfig(3);
     const requiresField = p3 && p3.checkpoint ? p3.checkpoint.requires : 'designApproved';
 
     if (!this.ticket[requiresField]) {
-      this.log(`\x1b[31m[BLOCKED]\x1b[0m Cannot implement feature. Design must be approved first.`);
+      this.log(`\x1b[31m[BLOCKED]\x1b[0m Cannot generate Swagger spec. Design must be approved first.`);
+      return false;
+    }
+
+    const p4 = getPhaseConfig(4) || { agent: 'architect-agent', name: 'Swagger API Specification' };
+    runner.runAgentTask(p4.agent, this.ticketId, `Phase 4 - ${p4.name}`, 'Drafting OpenAPI/Swagger schemas in spec.md');
+
+    this.ticket.state = 'SWAGGER_REVIEW';
+    this.save();
+    
+    this.log(`Architect Agent completed drafting Swagger API contract.`);
+    this.audit('SWAGGER', 'Drafted Swagger API contract');
+    this.log(`\x1b[31m[CHECKPOINT: Swagger Approval Required]\x1b[0m Swagger API contracts must be approved before tasks are broken down.`);
+    return true;
+  }
+
+  approveSwagger(approvingUser) {
+    const p4 = getPhaseConfig(4);
+    if (p4 && p4.checkpoint) {
+      if (!checkUserPermission(approvingUser, p4.checkpoint.permission)) {
+        this.log(`\x1b[31m[BLOCKED]\x1b[0m User "${approvingUser || 'Unknown'}" is not authorized to approve Swagger (needs permission "${p4.checkpoint.permission}").`);
+        return false;
+      }
+      this.ticket[p4.checkpoint.requires] = true;
+      this.ticket.state = p4.checkpoint.nextState;
+    } else {
+      this.ticket.swaggerApproved = true;
+      this.ticket.state = 'SWAGGER_APPROVED';
+    }
+    
+    this.save();
+
+    this.log(`Checkpoint passed. Swagger API contracts approved for ${this.ticketId} by ${approvingUser || 'System'}.`);
+    this.audit('APPROVE_SWAGGER', 'Swagger approved by human', approvingUser || 'System');
+    return true;
+  }
+
+  implement() {
+    const p4 = getPhaseConfig(4);
+    const requiresField = p4 && p4.checkpoint ? p4.checkpoint.requires : 'swaggerApproved';
+
+    if (!this.ticket[requiresField]) {
+      this.log(`\x1b[31m[BLOCKED]\x1b[0m Cannot implement feature. Swagger contract must be approved first.`);
       return false;
     }
 
     // Planner task breakdown
-    const p4 = getPhaseConfig(4) || { agent: 'planner-agent', name: 'Task Breakdown' };
-    runner.runAgentTask(p4.agent, this.ticketId, `Phase 4 - ${p4.name}`, 'Creating DAG tasks checklist in tasks.md');
+    const p5 = getPhaseConfig(5) || { agent: 'planner-agent', name: 'Task Breakdown' };
+    runner.runAgentTask(p5.agent, this.ticketId, `Phase 5 - ${p5.name}`, 'Creating DAG tasks checklist in tasks.md');
 
     // Coder implementation TDD
-    const p5 = getPhaseConfig(5) || { agent: 'coder-agent', name: 'Implementation' };
-    runner.runAgentTask(p5.agent, this.ticketId, `Phase 5 - ${p5.name}`, 'Executing TDD loops (RED -> GREEN)');
+    const p6 = getPhaseConfig(6) || { agent: 'coder-agent', name: 'Implementation' };
+    runner.runAgentTask(p6.agent, this.ticketId, `Phase 6 - ${p6.name}`, 'Executing TDD loops (RED -> GREEN)');
 
     // Test Agent self-tests
-    const p6 = getPhaseConfig(6) || { agent: 'test-agent', name: 'Self-Review & Tests' };
-    runner.runAgentTask(p6.agent, this.ticketId, `Phase 6 - ${p6.name}`, 'Executing unit and integration test suite');
+    const p7 = getPhaseConfig(7) || { agent: 'test-agent', name: 'Self-Review & Tests' };
+    runner.runAgentTask(p7.agent, this.ticketId, `Phase 7 - ${p7.name}`, 'Executing unit and integration test suite');
 
     this.ticket.state = 'IMPLEMENTED';
     this.save();
@@ -235,8 +278,8 @@ class Orchestrator {
       this.log(`Warning: Initiating review from state ${this.ticket.state}`);
     }
 
-    const p7 = getPhaseConfig(7) || { agent: 'reviewer-agent', name: 'Code Review' };
-    runner.runAgentTask(p7.agent, this.ticketId, `Phase 7 - ${p7.name}`, 'Scanning diffs for SQL injections and N+1 queries');
+    const p8 = getPhaseConfig(8) || { agent: 'reviewer-agent', name: 'Code Review' };
+    runner.runAgentTask(p8.agent, this.ticketId, `Phase 8 - ${p8.name}`, 'Scanning diffs for SQL injections and N+1 queries');
 
     this.ticket.state = 'UNDER_REVIEW';
     this.save();
@@ -248,14 +291,14 @@ class Orchestrator {
   }
 
   approveReview(approvingUser) {
-    const p7 = getPhaseConfig(7);
-    if (p7 && p7.checkpoint) {
-      if (!checkUserPermission(approvingUser, p7.checkpoint.permission)) {
-        this.log(`\x1b[31m[BLOCKED]\x1b[0m User "${approvingUser || 'Unknown'}" is not authorized to approve code review (needs permission "${p7.checkpoint.permission}").`);
+    const p8 = getPhaseConfig(8);
+    if (p8 && p8.checkpoint) {
+      if (!checkUserPermission(approvingUser, p8.checkpoint.permission)) {
+        this.log(`\x1b[31m[BLOCKED]\x1b[0m User "${approvingUser || 'Unknown'}" is not authorized to approve code review (needs permission "${p8.checkpoint.permission}").`);
         return false;
       }
-      this.ticket[p7.checkpoint.requires] = true;
-      this.ticket.state = p7.checkpoint.nextState;
+      this.ticket[p8.checkpoint.requires] = true;
+      this.ticket.state = p8.checkpoint.nextState;
     } else {
       this.ticket.reviewApproved = true;
       this.ticket.state = 'REVIEW_APPROVED';
@@ -269,16 +312,16 @@ class Orchestrator {
   }
 
   document() {
-    const p7 = getPhaseConfig(7);
-    const requiresField = p7 && p7.checkpoint ? p7.checkpoint.requires : 'reviewApproved';
+    const p8 = getPhaseConfig(8);
+    const requiresField = p8 && p8.checkpoint ? p8.checkpoint.requires : 'reviewApproved';
 
     if (!this.ticket[requiresField]) {
       this.log(`\x1b[31m[BLOCKED]\x1b[0m Cannot generate documentation. Code review must be approved first.`);
       return false;
     }
 
-    const p8 = getPhaseConfig(8) || { agent: 'docs-agent', name: 'Documentation' };
-    runner.runAgentTask(p8.agent, this.ticketId, `Phase 8 - ${p8.name}`, 'Generating functional and technical references');
+    const p9 = getPhaseConfig(9) || { agent: 'docs-agent', name: 'Documentation' };
+    runner.runAgentTask(p9.agent, this.ticketId, `Phase 9 - ${p9.name}`, 'Generating functional and technical references');
 
     this.ticket.state = 'DOCS_COMPLETE';
     this.save();
@@ -294,20 +337,20 @@ class Orchestrator {
       return false;
     }
 
-    const p9 = getPhaseConfig(9);
-    if (p9 && p9.checkpoint) {
-      if (!checkUserPermission(approvingUser, p9.checkpoint.permission)) {
-        this.log(`\x1b[31m[BLOCKED]\x1b[0m User "${approvingUser || 'Unknown'}" is not authorized to merge PR (needs permission "${p9.checkpoint.permission}").`);
+    const p10 = getPhaseConfig(10);
+    if (p10 && p10.checkpoint) {
+      if (!checkUserPermission(approvingUser, p10.checkpoint.permission)) {
+        this.log(`\x1b[31m[BLOCKED]\x1b[0m User "${approvingUser || 'Unknown'}" is not authorized to merge PR (needs permission "${p10.checkpoint.permission}").`);
         return false;
       }
-      this.ticket[p9.checkpoint.requires] = true;
-      this.ticket.state = p9.checkpoint.nextState;
+      this.ticket[p10.checkpoint.requires] = true;
+      this.ticket.state = p10.checkpoint.nextState;
     } else {
       this.ticket.prMerged = true;
       this.ticket.state = 'MERGED';
     }
 
-    runner.runAgentTask('coder-agent', this.ticketId, 'Phase 9 - PR & CI', 'Validating CI and requesting merge go-ahead');
+    runner.runAgentTask('coder-agent', this.ticketId, 'Phase 10 - PR & CI', 'Validating CI and requesting merge go-ahead');
 
     this.save();
 
@@ -317,16 +360,16 @@ class Orchestrator {
   }
 
   archive() {
-    const p9 = getPhaseConfig(9);
-    const requiresField = p9 && p9.checkpoint ? p9.checkpoint.requires : 'prMerged';
+    const p10 = getPhaseConfig(10);
+    const requiresField = p10 && p10.checkpoint ? p10.checkpoint.requires : 'prMerged';
 
     if (!this.ticket[requiresField]) {
       this.log(`\x1b[31m[BLOCKED]\x1b[0m Cannot archive. PR must be merged first.`);
       return false;
     }
 
-    const p10 = getPhaseConfig(10) || { agent: 'context-agent', name: 'Merge & Context Archive' };
-    runner.runAgentTask(p10.agent, this.ticketId, `Phase 10 - ${p10.name}`, 'Archiving specs, ADRs, and session logs');
+    const p11 = getPhaseConfig(11) || { agent: 'context-agent', name: 'Merge & Context Archive' };
+    runner.runAgentTask(p11.agent, this.ticketId, `Phase 11 - ${p11.name}`, 'Archiving specs, ADRs, and session logs');
 
     // Execute archive logic
     const ticketDir = path.join(workspaceRoot, 'tickets', this.ticketId);

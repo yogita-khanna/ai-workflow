@@ -116,6 +116,7 @@ npx turbo run build
 - **Do NOT** install new dependencies without mentioning it in the PR description.
 - **Do NOT** rename existing API endpoint paths (breaking change — requires RFC).
 - **Do NOT** commit secrets, tokens, or credentials in any form.
+- **Do NOT** stage or commit `node_modules/` directories or environment configurations (`.env*.local`).
 - **Do NOT** merge to `dev` or `main` directly — all changes go through a PR.
 
 ---

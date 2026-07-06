@@ -85,10 +85,10 @@ async function run() {
     assert(designResult2 === true, 'orch.design() should succeed when spec is approved');
     assert(orch.ticket.state === 'DESIGN_DRAFTING', 'State should transition to DESIGN_DRAFTING');
 
-    // 6. Blockage Check - Cannot implement before design approval
-    console.log('\nTesting Gate: Cannot implement before design approval (Checkpoint #2)...');
-    const implementResult = orch.implement();
-    assert(implementResult === false, 'orch.implement() should fail when design is not approved');
+    // 6. Blockage Check - Cannot draft Swagger before design approval
+    console.log('\nTesting Gate: Cannot draft Swagger before design approval...');
+    const swaggerResult = orch.swagger();
+    assert(swaggerResult === false, 'orch.swagger() should fail when design is not approved');
     assert(orch.ticket.state === 'DESIGN_DRAFTING', 'State should remain DESIGN_DRAFTING');
 
     // 7. RBAC: Design Approval (Checkpoint #2)
@@ -104,23 +104,45 @@ async function run() {
     const designContent = fs.readFileSync(path.join(ticketDir, 'design.md'), 'utf8');
     assert(designContent.includes('Status: Approved (Checkpoint #2)'), 'design.md status should be updated to Approved');
 
-    // 8. Implement Phase (TDD Loop & Tests)
+    // 8. Swagger Draft Phase
+    const swaggerResult2 = orch.swagger();
+    assert(swaggerResult2 === true, 'orch.swagger() should succeed when design is approved');
+    assert(orch.ticket.state === 'SWAGGER_REVIEW', 'State should transition to SWAGGER_REVIEW');
+
+    // 9. Blockage Check - Cannot implement before Swagger approval
+    console.log('\nTesting Gate: Cannot implement before Swagger approval...');
+    const implementResult = orch.implement();
+    assert(implementResult === false, 'orch.implement() should fail when Swagger is not approved');
+    assert(orch.ticket.state === 'SWAGGER_REVIEW', 'State should remain SWAGGER_REVIEW');
+
+    // 10. RBAC: Swagger Approval (Checkpoint #2b)
+    console.log('\nTesting RBAC Swagger approval gates...');
+    const swaggerUnauthApprove = orch.approveSwagger('john');
+    assert(swaggerUnauthApprove === false, 'john should be blocked from approving Swagger');
+    assert(orch.ticket.swaggerApproved === false, 'swaggerApproved should remain false');
+
+    const swaggerAuthApprove = orch.approveSwagger('bob');
+    assert(swaggerAuthApprove === true, 'bob should succeed in approving Swagger');
+    assert(orch.ticket.swaggerApproved === true, 'swaggerApproved should be true');
+    assert(orch.ticket.state === 'SWAGGER_APPROVED', 'State should transition to SWAGGER_APPROVED');
+
+    // 11. Implement Phase (TDD Loop & Tests)
     const implementResult2 = orch.implement();
-    assert(implementResult2 === true, 'orch.implement() should succeed when design is approved');
+    assert(implementResult2 === true, 'orch.implement() should succeed when Swagger is approved');
     assert(orch.ticket.state === 'IMPLEMENTED', 'State should transition to IMPLEMENTED');
 
-    // 9. Review Phase (Reviewer Agent checklist scan)
+    // 12. Review Phase (Reviewer Agent checklist scan)
     const reviewResult = orch.review();
     assert(reviewResult === true, 'orch.review() should succeed');
     assert(orch.ticket.state === 'UNDER_REVIEW', 'State should transition to UNDER_REVIEW');
 
-    // 10. Blockage Check - Cannot document before review approval
+    // 13. Blockage Check - Cannot document before review approval
     console.log('\nTesting Gate: Cannot document before review approval (Checkpoint #3)...');
     const docResult = orch.document();
     assert(docResult === false, 'orch.document() should fail when review is not approved');
     assert(orch.ticket.state === 'UNDER_REVIEW', 'State should remain UNDER_REVIEW');
 
-    // 11. RBAC: Review Approval (Checkpoint #3)
+    // 14. RBAC: Review Approval (Checkpoint #3)
     console.log('\nTesting RBAC review approval gates...');
     const reviewUnauthApprove = orch.approveReview('john');
     assert(reviewUnauthApprove === false, 'john should be blocked from signing off review');
@@ -131,18 +153,18 @@ async function run() {
     assert(orch.ticket.reviewApproved === true, 'reviewApproved should be true');
     assert(orch.ticket.state === 'REVIEW_APPROVED', 'State should transition to REVIEW_APPROVED');
 
-    // 12. Document Phase (Docs Agent outputs)
+    // 15. Document Phase (Docs Agent outputs)
     const docResult2 = orch.document();
     assert(docResult2 === true, 'orch.document() should succeed when review is approved');
     assert(orch.ticket.state === 'DOCS_COMPLETE', 'State should transition to DOCS_COMPLETE');
 
-    // 13. Blockage Check - Cannot archive before PR is merged
+    // 16. Blockage Check - Cannot archive before PR is merged
     console.log('\nTesting Gate: Cannot archive before merge (Checkpoint #4)...');
     const archiveResult = orch.archive();
     assert(archiveResult === false, 'orch.archive() should fail when PR is not merged');
     assert(orch.ticket.state === 'DOCS_COMPLETE', 'State should remain DOCS_COMPLETE');
 
-    // 14. RBAC: Merge Approval (Checkpoint #4 Approval)
+    // 17. RBAC: Merge Approval (Checkpoint #4 Approval)
     console.log('\nTesting RBAC merge approval gates...');
     const mergeUnauthApprove = orch.merge('john');
     assert(mergeUnauthApprove === false, 'john should be blocked from merging PR');
@@ -153,7 +175,7 @@ async function run() {
     assert(orch.ticket.prMerged === true, 'prMerged should be true');
     assert(orch.ticket.state === 'MERGED', 'State should transition to MERGED');
 
-    // 15. Context Archive (Phase 10 Preservation)
+    // 18. Context Archive (Phase 11 Preservation)
     const archiveResult2 = orch.archive();
     assert(archiveResult2 === true, 'orch.archive() should succeed when PR is merged');
     assert(orch.ticket.state === 'ARCHIVED', 'State should transition to ARCHIVED');

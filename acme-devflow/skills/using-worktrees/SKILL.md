@@ -29,3 +29,4 @@ npm install
 
 - **Running pnpm instead of npm**: This is a strict `npm workspace` setup. Using pnpm or yarn will break lockfiles and package resolutions.
 - **Port Collisions**: Starting `npx turbo run dev` in two worktrees will crash due to Next.js trying to bind port 3000 in both.
+- **Committing node_modules**: Never stage or commit `node_modules` directories. Ensure they are added to the `.gitignore` at the workspace root.

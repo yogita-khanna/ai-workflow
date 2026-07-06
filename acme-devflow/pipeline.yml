@@ -26,24 +26,34 @@ phases:
       nextState: "DESIGN_APPROVED"
 
   - phase: 4
+    name: "Swagger API Specification"
+    state: "SWAGGER_REVIEW"
+    agent: "architect-agent"
+    skill: "writing-a-spec"
+    checkpoint:
+      requires: "swaggerApproved"
+      permission: "approve:swagger"
+      nextState: "SWAGGER_APPROVED"
+
+  - phase: 5
     name: "Task Breakdown"
-    state: "DESIGN_APPROVED"
+    state: "SWAGGER_APPROVED"
     agent: "planner-agent"
     skill: "writing-a-spec"
 
-  - phase: 5
+  - phase: 6
     name: "Implementation"
-    state: "DESIGN_APPROVED"
+    state: "SWAGGER_APPROVED"
     agent: "coder-agent"
     skill: "tdd-loop"
 
-  - phase: 6
+  - phase: 7
     name: "Self-Review & Tests"
     state: "IMPLEMENTED"
     agent: "test-agent"
     skill: "tdd-loop"
 
-  - phase: 7
+  - phase: 8
     name: "Code Review"
     state: "UNDER_REVIEW"
     agent: "reviewer-agent"
@@ -53,13 +63,13 @@ phases:
       permission: "approve:review"
       nextState: "REVIEW_APPROVED"
 
-  - phase: 8
+  - phase: 9
     name: "Documentation"
     state: "REVIEW_APPROVED"
     agent: "docs-agent"
     skill: "documenting-changes"
 
-  - phase: 9
+  - phase: 10
     name: "PR & CI"
     state: "DOCS_COMPLETE"
     agent: "coder-agent"
@@ -69,7 +79,7 @@ phases:
       permission: "approve:merge"
       nextState: "MERGED"
 
-  - phase: 10
+  - phase: 11
     name: "Merge & Context Archive"
     state: "MERGED"
     agent: "context-agent"
