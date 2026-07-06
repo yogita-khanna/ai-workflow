@@ -5,15 +5,18 @@ We treat `acme-devflow` as an internal open-source project. This means we welcom
 ## Philosophy: Core vs. Extension
 
 ### What belongs in Core?
+
 The core pipeline (`acme-devflow`) is responsible for enforcing the universal truths of our engineering culture:
+
 - Work must be spec-driven.
 - Code must have tests (TDD).
 - Agents cannot self-merge.
 - Production deployments are human-only.
 
-If your proposed change reinforces these universals or makes the baseline pipeline safer/faster for *everyone*, it belongs in Core.
+If your proposed change reinforces these universals or makes the baseline pipeline safer/faster for _everyone_, it belongs in Core.
 
 ### What belongs in an Extension?
+
 - Custom linting rules for a specific frontend framework.
 - Deployment scripts to a unique staging environment.
 - Specialized notification formats for a single squad's Slack channel.

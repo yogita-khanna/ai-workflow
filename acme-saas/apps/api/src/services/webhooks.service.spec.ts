@@ -1,7 +1,7 @@
-import { WebhooksService } from './webhooks.service';
-import { WebhooksRepository } from '../repositories/webhooks.repository';
+import { WebhooksService } from "./webhooks.service";
+import { WebhooksRepository } from "../repositories/webhooks.repository";
 
-describe('WebhooksService', () => {
+describe("WebhooksService", () => {
   let service: WebhooksService;
   let mockRepository: jest.Mocked<WebhooksRepository>;
 
@@ -13,9 +13,11 @@ describe('WebhooksService', () => {
     service = new WebhooksService(mockRepository);
   });
 
-  describe('getWebhooks', () => {
-    it('should return all webhooks from repository', async () => {
-      const mockWebhooks = [{ id: 1, url: 'http://test', event_type: 'user.created' }];
+  describe("getWebhooks", () => {
+    it("should return all webhooks from repository", async () => {
+      const mockWebhooks = [
+        { id: 1, url: "http://test", event_type: "user.created" },
+      ];
       mockRepository.getWebhooks.mockResolvedValueOnce(mockWebhooks);
 
       const result = await service.getWebhooks();
@@ -23,14 +25,21 @@ describe('WebhooksService', () => {
     });
   });
 
-  describe('createWebhook', () => {
-    it('should create webhook via repository', async () => {
-      const mockWebhook = { id: 1, url: 'http://test', event_type: 'user.created' };
+  describe("createWebhook", () => {
+    it("should create webhook via repository", async () => {
+      const mockWebhook = {
+        id: 1,
+        url: "http://test",
+        event_type: "user.created",
+      };
       mockRepository.createWebhook.mockResolvedValueOnce(mockWebhook);
 
-      const result = await service.createWebhook('http://test', 'user.created');
+      const result = await service.createWebhook("http://test", "user.created");
       expect(result).toEqual(mockWebhook);
-      expect(mockRepository.createWebhook).toHaveBeenCalledWith('http://test', 'user.created');
+      expect(mockRepository.createWebhook).toHaveBeenCalledWith(
+        "http://test",
+        "user.created",
+      );
     });
   });
 });

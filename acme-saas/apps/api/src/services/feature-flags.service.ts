@@ -1,4 +1,7 @@
-import { FeatureFlagsRepository, FeatureFlag } from '../repositories/feature-flags.repository';
+import {
+  FeatureFlagsRepository,
+  FeatureFlag,
+} from "../repositories/feature-flags.repository";
 
 export class FeatureFlagsService {
   constructor(private readonly repository: FeatureFlagsRepository) {}

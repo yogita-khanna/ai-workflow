@@ -1,7 +1,7 @@
-import { WebhooksController, CreateWebhookDto } from './webhooks.controller';
-import { WebhooksService } from '../services/webhooks.service';
+import { WebhooksController, CreateWebhookDto } from "./webhooks.controller";
+import { WebhooksService } from "../services/webhooks.service";
 
-describe('WebhooksController', () => {
+describe("WebhooksController", () => {
   let controller: WebhooksController;
   let mockService: jest.Mocked<WebhooksService>;
 
@@ -13,9 +13,11 @@ describe('WebhooksController', () => {
     controller = new WebhooksController(mockService);
   });
 
-  describe('getWebhooks', () => {
-    it('should return all webhooks', async () => {
-      const mockWebhooks = [{ id: 1, url: 'http://test', event_type: 'user.created' }] as any;
+  describe("getWebhooks", () => {
+    it("should return all webhooks", async () => {
+      const mockWebhooks = [
+        { id: 1, url: "http://test", event_type: "user.created" },
+      ] as any;
       mockService.getWebhooks.mockResolvedValueOnce(mockWebhooks);
 
       const result = await controller.getWebhooks();
@@ -24,16 +26,26 @@ describe('WebhooksController', () => {
     });
   });
 
-  describe('createWebhook', () => {
-    it('should create and return the webhook', async () => {
-      const dto: CreateWebhookDto = { url: 'http://test', event_type: 'user.created' };
-      const mockWebhook = { id: 1, url: 'http://test', event_type: 'user.created' } as any;
-      
+  describe("createWebhook", () => {
+    it("should create and return the webhook", async () => {
+      const dto: CreateWebhookDto = {
+        url: "http://test",
+        event_type: "user.created",
+      };
+      const mockWebhook = {
+        id: 1,
+        url: "http://test",
+        event_type: "user.created",
+      } as any;
+
       mockService.createWebhook.mockResolvedValueOnce(mockWebhook);
 
       const result = await controller.createWebhook(dto);
       expect(result).toEqual(mockWebhook);
-      expect(mockService.createWebhook).toHaveBeenCalledWith('http://test', 'user.created');
+      expect(mockService.createWebhook).toHaveBeenCalledWith(
+        "http://test",
+        "user.created",
+      );
     });
   });
 });

@@ -1,4 +1,7 @@
-import { WebhooksRepository, Webhook } from '../repositories/webhooks.repository';
+import {
+  WebhooksRepository,
+  Webhook,
+} from "../repositories/webhooks.repository";
 
 export class WebhooksService {
   constructor(private readonly repository: WebhooksRepository) {}

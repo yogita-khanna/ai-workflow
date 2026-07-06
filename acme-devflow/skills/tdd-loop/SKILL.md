@@ -5,18 +5,22 @@ trigger: "Run the Red-Green-Refactor loop using Jest for backend and RTL/Playwri
 # Skill: tdd-loop
 
 ## AGENT DIRECTIVE (CRITICAL CONSTRAINTS)
+
 You must execute the implementation exactly as dictated by `tasks.md` in a strict RED -> GREEN loop.
+
 1. **Never write implementation code before writing a failing test.**
 2. **Never mock the database in Integration Tests.** You must use a live Postgres container for all e2e/integration tests.
 3. **Never bypass Turborepo.** You must run tests via `npx turbo run test`.
 
 ## TOKEN & CONTEXT OPTIMIZATION (CRITICAL)
+
 - **Mandatory First Step**: You MUST read the `CONTEXT.md` file in the root of the repository before doing any work. This file holds the entire architecture context and active initiatives.
 - **Strict Bounds**: Rely entirely on the architecture defined in `CONTEXT.md` and the `design.md` for this ticket. Do not explore directories outside of the modules you are assigned to implement.
 
 ## Step-by-Step Guidance
 
 ### Phase 5: Implementation
+
 1. **Check `tasks.md`**: Identify the next incomplete task in the DAG.
 2. **Write the Failing Test (Red)**:
    - Backend Unit: `*.spec.ts`. Mock the raw `pg.Pool` repository layer.
@@ -30,7 +34,9 @@ You must execute the implementation exactly as dictated by `tasks.md` in a stric
 7. **Mark Task Complete**: Update `[x]` in `tasks.md`.
 
 ### Phase 6: Self-Review & Tests
+
 Once all tasks in `tasks.md` are marked complete, perform self-review:
+
 1. **Run Full Verification**: Run linting, type checks, and all tests via `npx turbo run lint test build` from root. Ensure 0 errors.
 2. **Perform Self-Diff Review**:
    - Compare your git diff against the approved Spec Acceptance Criteria.

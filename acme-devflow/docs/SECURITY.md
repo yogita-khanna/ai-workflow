@@ -22,6 +22,7 @@ We do not rely solely on the application code behaving correctly (e.g., an agent
 ## Audit Trails
 
 Human decisions are the core constraint of this pipeline. Every manual intervention is logged permanently.
+
 - The `audit_logs` table in the SQLite database tracks:
   - Who made the decision (user handle).
   - When the decision occurred (timestamp).
@@ -31,6 +32,7 @@ Human decisions are the core constraint of this pipeline. Every manual intervent
 ## Cost Guardrails
 
 AI model usage can spiral if left unchecked during TDD retry loops.
+
 - **Per-Ticket Budget:** Configurable maximum spend per ticket (e.g., $10).
 - **Daily Spend Limit:** Global orchestrator budget limit.
 - If limits are breached, the orchestrator immediately halts agent execution and escalates the ticket to `needs_human`.

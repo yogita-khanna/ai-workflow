@@ -1,7 +1,7 @@
-import { FeatureFlagsService } from './feature-flags.service';
-import { FeatureFlagsRepository } from '../repositories/feature-flags.repository';
+import { FeatureFlagsService } from "./feature-flags.service";
+import { FeatureFlagsRepository } from "../repositories/feature-flags.repository";
 
-describe('FeatureFlagsService', () => {
+describe("FeatureFlagsService", () => {
   let service: FeatureFlagsService;
   let mockRepository: jest.Mocked<FeatureFlagsRepository>;
 
@@ -13,9 +13,9 @@ describe('FeatureFlagsService', () => {
     service = new FeatureFlagsService(mockRepository);
   });
 
-  describe('getAllFlags', () => {
-    it('should return all flags from repository', async () => {
-      const mockFlags = [{ name: 'new_ui', is_enabled: true }];
+  describe("getAllFlags", () => {
+    it("should return all flags from repository", async () => {
+      const mockFlags = [{ name: "new_ui", is_enabled: true }];
       mockRepository.getAllFlags.mockResolvedValueOnce(mockFlags);
 
       const result = await service.getAllFlags();
@@ -23,14 +23,14 @@ describe('FeatureFlagsService', () => {
     });
   });
 
-  describe('setFlag', () => {
-    it('should upsert flag via repository', async () => {
-      const mockFlag = { name: 'new_ui', is_enabled: true };
+  describe("setFlag", () => {
+    it("should upsert flag via repository", async () => {
+      const mockFlag = { name: "new_ui", is_enabled: true };
       mockRepository.upsertFlag.mockResolvedValueOnce(mockFlag);
 
-      const result = await service.setFlag('new_ui', true);
+      const result = await service.setFlag("new_ui", true);
       expect(result).toEqual(mockFlag);
-      expect(mockRepository.upsertFlag).toHaveBeenCalledWith('new_ui', true);
+      expect(mockRepository.upsertFlag).toHaveBeenCalledWith("new_ui", true);
     });
   });
 });

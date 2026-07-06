@@ -1,4 +1,7 @@
-import { SystemSettingsRepository, SystemSettings } from '../repositories/system-settings.repository';
+import {
+  SystemSettingsRepository,
+  SystemSettings,
+} from "../repositories/system-settings.repository";
 
 export class SystemSettingsService {
   constructor(private readonly repository: SystemSettingsRepository) {}
@@ -9,14 +12,18 @@ export class SystemSettingsService {
       // Return defaults if none found yet
       return {
         user_id: userId,
-        theme: 'light',
-        notifications_enabled: true
+        theme: "light",
+        notifications_enabled: true,
       };
     }
     return settings;
   }
 
-  async updateSettings(userId: string, theme: string, notificationsEnabled: boolean): Promise<SystemSettings> {
+  async updateSettings(
+    userId: string,
+    theme: string,
+    notificationsEnabled: boolean,
+  ): Promise<SystemSettings> {
     return this.repository.upsertSettings(userId, theme, notificationsEnabled);
   }
 }

@@ -4,11 +4,11 @@ This directory contains the implementations for the `acme-devflow` commands.
 
 ## IMPORTANT: Agent-Invocable Commands
 
-These are **NOT** meant to be run as CLI scripts by a human (e.g., `node propose.js`). 
+These are **NOT** meant to be run as CLI scripts by a human (e.g., `node propose.js`).
 
 Instead, these commands are exposed as **agent-invocable slash commands** (via the `.claude-plugin/plugin.json` registration). When a user types `/devflow:propose TICKET-123` in a chat session, the agent itself invokes this logic as part of its internal workflow.
 
-The primary interface is the agent recognizing that a ticket needs a proposal, and triggering this command *from within its session context* to generate the required artifacts and state changes.
+The primary interface is the agent recognizing that a ticket needs a proposal, and triggering this command _from within its session context_ to generate the required artifacts and state changes.
 
 ## Available Commands
 

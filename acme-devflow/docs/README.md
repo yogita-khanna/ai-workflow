@@ -9,15 +9,17 @@ An agentic, spec-driven development pipeline plugin for our organization.
 Since this is built as a Claude Plugin, you can install it into your local workspace:
 
 \`\`\`bash
+
 # From within your project directory:
+
 /plugin install devflow@acme-marketplace
 \`\`\`
 
-*(Under the hood, this links the `.claude-plugin/plugin.json` into your local `.claude` config, exposing the skills and commands to the agent).*
+_(Under the hood, this links the `.claude-plugin/plugin.json` into your local `.claude` config, exposing the skills and commands to the agent)._
 
 ## Usage
 
-Agents loaded with `acme-devflow` will automatically check the `using-devflow` skill before acting. 
+Agents loaded with `acme-devflow` will automatically check the `using-devflow` skill before acting.
 
 As a human, you can trigger the pipeline in a chat session by typing:
 
