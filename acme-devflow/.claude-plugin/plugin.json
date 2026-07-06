@@ -43,6 +43,16 @@
       "name": "picking-a-jira-bug",
       "path": "skills/picking-a-jira-bug/SKILL.md",
       "description": "Guidelines for a human to select a bug from the Jira board."
+    },
+    {
+      "name": "documenting-changes",
+      "path": "skills/documenting-changes/SKILL.md",
+      "description": "Guidelines for Phase 8: creating user-facing functional docs and engineer-facing technical docs."
+    },
+    {
+      "name": "context-preservation",
+      "path": "skills/context-preservation/SKILL.md",
+      "description": "Guidelines for Phase 10: archiving spec, ADR, and session context to keep CONTEXT.md updated."
     }
   ],
   "commands": [
@@ -65,6 +75,53 @@
       "name": "/devflow:explore",
       "description": "Sandbox command for discussing ideas without committing to a proposal.",
       "executable": "node spec-framework/commands/explore.js"
+    }
+  ],
+  "agents": [
+    {
+      "name": "pm-agent",
+      "path": "agents/pm-agent/AGENT.md",
+      "description": "PM Agent for Phase 1 Discovery & Framing."
+    },
+    {
+      "name": "spec-agent",
+      "path": "agents/spec-agent/AGENT.md",
+      "description": "Spec Agent for Phase 2 Spec Writing."
+    },
+    {
+      "name": "architect-agent",
+      "path": "agents/architect-agent/AGENT.md",
+      "description": "Architect Agent for Phase 3 Technical Design."
+    },
+    {
+      "name": "planner-agent",
+      "path": "agents/planner-agent/AGENT.md",
+      "description": "Planner Agent for Phase 4 Task Breakdown."
+    },
+    {
+      "name": "coder-agent",
+      "path": "agents/coder-agent/AGENT.md",
+      "description": "Coder Agent for Phase 5 Implementation and Phase 9 PR & CI."
+    },
+    {
+      "name": "test-agent",
+      "path": "agents/test-agent/AGENT.md",
+      "description": "Test Agent for Phase 6 Self-Review & Tests."
+    },
+    {
+      "name": "reviewer-agent",
+      "path": "agents/reviewer-agent/AGENT.md",
+      "description": "Reviewer Agent for Phase 7 Code Review."
+    },
+    {
+      "name": "docs-agent",
+      "path": "agents/docs-agent/AGENT.md",
+      "description": "Docs Agent for Phase 8 Documentation."
+    },
+    {
+      "name": "context-agent",
+      "path": "agents/context-agent/AGENT.md",
+      "description": "Context Agent for Phase 10 Merge & Context Archive."
     }
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "name": "acme-devflow-orchestrator",
+  "version": "1.0.0",
+  "description": "Core state machine and agent runner orchestrator for acme-devflow.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node tests/run-tests.js"
+  },
+  "private": true
+}

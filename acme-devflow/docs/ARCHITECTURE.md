@@ -1,51 +1,109 @@
-# `acme-devflow` Architecture
+# `acme-devflow` Architecture & Workflow
 
-\`acme-devflow\` is a native, open-source-style dev pipeline plugin modeled after the Superpowers / OpenSpec paradigm. It enforces a strict, agent-driven workflow from intake through to the \`dev\` environment, explicitly stopping before production.
+`acme-devflow` is a native, open-source-style dev pipeline plugin designed for pairing human engineers with AI agents. It enforces a strict, agent-driven workflow from discovery and spec-writing to the code review and merge stage, using hard human gates before key milestones.
 
-## System Components
+---
 
-### 1. The Skills Library (\`skills/\`)
-A collection of composable capabilities. Agents load these skills dynamically during a session.
-- **Bootstrapping:** \`using-devflow\` runs first, enforcing that the agent uses the pipeline rather than cowboy-coding.
-- **Action Skills:** Handle specific tasks like classification, spec writing, TDD execution, PR reviewing, and worktree manipulation.
+## 0. Workflow at a Glance
 
-### 2. Spec-Driven Framework (\`spec-framework/\`)
-Agent-invocable commands that produce stateful artifacts (specs).
-- **Commands:** \`/devflow:propose\`, \`/devflow:apply\`, \`/devflow:archive\`, \`/devflow:explore\`.
-- **Templates:** Markdown artifacts representing the current requirements in a delta format (Given/When/Then).
+```
+Idea/Ticket
+   │
+   ▼
+1. Discovery & Framing  ──────────────► [Planner/PM Agent] using product-brainstorming
+   │
+   ▼
+2. Spec Writing  ─────────────────────► [Spec Agent]      ◄── ✅ HUMAN CHECKPOINT #1 (Spec Approval)
+   │
+   ▼
+3. Technical Design / Architecture ───► [Architect Agent]  ◄── ✅ HUMAN CHECKPOINT #2 (Design Approval)
+   │
+   ▼
+4. Task Breakdown  ────────────────────► [Planner Agent] using sprint-planning
+   │
+   ▼
+5. Implementation  ─────────────────────► [Coder Agent] (RED -> GREEN TDD loop)
+   │
+   ▼
+6. Self-Review & Tests  ────────────────► [Coder Agent + Test Agent]
+   │
+   ▼
+7. Code Review  ─────────────────────────► [Reviewer Agent]  ◄── ✅ HUMAN CHECKPOINT #3 (Review Sign-off)
+   │
+   ▼
+8. Documentation  ───────────────────────► [Docs Agent] (Functional + Technical)
+   │
+   ▼
+9. PR & CI  ──────────────────────────────► [Coder Agent]     ◄── ✅ HUMAN CHECKPOINT #4 (Merge Approval)
+   │
+   ▼
+10. Merge & Context Archive  ─────────────► [Context Agent] (Archived under /docs/context/)
+```
 
-### 3. The Orchestrator (\`orchestrator/\`)
-The Node.js state machine that ties the skills and spec framework together.
+---
 
-## State Machine Stages
+## 1. Phase-by-Phase Breakdown
 
-The orchestrator guarantees the following linear pipeline. No stage can be bypassed (except manually selected bugs, which skip classification).
+### Phase 1 — Discovery & Framing
+- **Goal:** Turn a raw idea/ticket into a clear problem statement.
+- **Agent/Skill:** Planner or PM-style agent using `product-brainstorming` and `classify-ticket`.
+- **Output:** Problem statement, goals/non-goals, rough scope, risk score.
+- **Checkpoint:** None yet (low-cost exploration) — but flag if the idea is ambiguous enough to need a human decision.
 
-1. **Intake Queue:** Features (from GitHub Projects) and Complex Bugs (from Jira) enter here.
-2. **Classification:** Automated agent check using the \`classify-ticket\` skill. Outputs \`auto-resolve\` or \`ask-human\`.
-3. **Spec Frozen:** The ticket enters the implementation queue with explicit requirements.
-4. **Worktree Creation:** A local \`git worktree\` (\`agent/<ticket-id>-<slug>\`) is allocated.
-5. **Implement + TDD Loop:** Agent loops through test/code cycles. Escalates to human on max-retry limit.
-6. **Standards + Regression Check:** Runs linting, type-checking, and the full backend test suite against the diff.
-7. **Frontend Self-Test:** (If applicable) Deploys a preview CDN build and runs UI flow tests.
-8. **Create PR:** Agent opens the PR but **never self-merges**.
-9. **Reviewer Comments:** The agent addresses comments from humans or review-bots in a loop until resolved.
-10. **Human Approves & Merges:** A required platform-level human action merges the PR to \`dev\`.
-11. **Dev Integration & Regression:** Final integration test on the \`dev\` branch.
-12. **Terminal State ("Deployed to Dev"):** The ticket is closed, and the worktree is cleaned up.
+### Phase 2 — Spec Writing
+- **Agent/Skill:** Spec Agent (using `spec.md` template).
+- **Output:** A committed `spec.md` in the ticket/repo directory.
+- **✅ HUMAN CHECKPOINT #1 — Spec Approval:** A human (PM/Tech Lead) must approve scope, acceptance criteria, and non-goals in `spec.md` before any design work starts.
 
-> [!WARNING]
-> **Production Boundary:** There is **NO** automated path to production. Humans decide when/how to promote \`dev\` -> \`main\`/prod separately.
+### Phase 3 — Technical Design / Architecture
+- **Agent/Skill:** Architect Agent — proposes system design, data model, API contracts, and identifies risks/trade-offs. Produces an Architecture Decision Record (ADR) for any non-trivial decision.
+- **Output:** Design doc (`design.md`) + ADRs.
+- **✅ HUMAN CHECKPOINT #2 — Design Approval:** Senior engineer/architect reviews for feasibility, security, scalability, and consistency with existing systems before code implementation begins.
 
-## Integration Details
+### Phase 4 — Task Breakdown
+- **Agent/Skill:** Planner Agent (using `tasks.md` template) — breaks the approved design into atomic, independently reviewable tasks/tickets with estimates and dependencies in a Directed Acyclic Graph (DAG) checklist.
+- **Output:** Task list checklist, each task linked back to the spec's acceptance criteria.
 
-- **Ticketing:** Features live in GitHub Projects. Bugs live in Jira (fetched read-only via \`jira-client.ts\`).
-- **State Persistence:** SQLite tracks ticket status and audit logs (single-instance setup).
-- **Notifications:** Slack for urgent alerts (escalations, classification tradeoffs) and GitHub PR comments for code review.
+### Phase 5 — Implementation
+- **Agent/Skill:** Coder Agent implements one task at a time, following the design doc and repo conventions.
+- **Practice:** Small, focused commits; agent writes/updates tests alongside code (TDD loop: RED -> GREEN), not after.
 
-## Concurrency Safety
+### Phase 6 — Self-Review & Tests
+- **Agent/Skill:** Coder Agent + Test Agent run unit/integration tests, linting, type checks; Coder Agent performs a self-diff review against the spec's acceptance criteria before requesting human/reviewer attention.
+- **Output:** Green CI locally, a self-review note ("what changed and why") and session summary.
 
-\`acme-devflow\` is designed to run multiple agents concurrently safely:
-1. **File Isolation:** Each ticket gets its own isolated \`git worktree\` directory.
-2. **Branch Isolation:** Each ticket pushes to a uniquely named remote branch (\`agent/<id>-<slug>\`), preventing push races.
-3. **Port Isolation:** Frontend preview servers are assigned deterministic, isolated ports based on a hash of the ticket ID to prevent bind conflicts.
+### Phase 7 — Code Review
+- **Agent/Skill:** Reviewer Agent does a first pass against parameters (Correctness, Design, Tests, Security, Performance, Readability, Documentation), flags issues, and produces a review summary using severity prefixes (🔴 Blocking, 🟡 Should-fix, 🟢 Nit).
+- **✅ HUMAN CHECKPOINT #3 — Review Sign-off:** A human reviewer (independent of the developer/agent) gives final approval. AI review reduces human review time but does not replace human sign-off.
+
+### Phase 8 — Documentation
+- **Agent/Skill:** Docs Agent — produces both functional and technical docs (API reference, data model changes, ADRs, runbooks).
+- **Output:** Updated user-facing docs, technical references, changelog entries.
+
+### Phase 9 — PR & CI
+- **Agent/Skill:** Coder Agent opens the PR with a description generated from the spec + self-review; CI runs full test suite.
+- **✅ HUMAN CHECKPOINT #4 — Merge Approval:** Release owner/tech lead merges the PR. Merge is a production commitment, which deserves its own explicit "go."
+
+### Phase 10 — Merge & Context Archive
+- **Agent/Skill:** Context Agent archives the spec, ADRs, review notes, and outcome into the context store (`docs/context/`) and updates the living `CONTEXT.md` index file so future work can retrieve why decisions were made.
+
+---
+
+## 2. Human Checkpoint Summary Table
+
+| # | Checkpoint | Gate | Who | Blocks |
+|---|---|---|---|---|
+| 1 | **Spec Approval** | Scope/acceptance criteria signed off | PM / Tech Lead | Design phase |
+| 2 | **Design Approval** | Architecture/ADRs signed off | Senior Eng / Architect | Implementation |
+| 3 | **Review Sign-off** | Code review approved | Independent Reviewer | PR merge readiness |
+| 4 | **Merge Approval** | Final go-ahead to merge | Branch/Release Owner | Actual merge |
+
+---
+
+## 3. Context Preservation Mechanism
+
+To prevent knowledge loss between sessions, agents, and humans:
+- **`docs/context/specs/`**: Approved specs and designs.
+- **`docs/context/adrs/`**: Architecture Decision Records detailing what was decided, why, and what was rejected.
+- **`docs/context/sessions/`**: Agent session summaries detailing what was attempted, what worked, what didn't, and open questions.
+- **`CONTEXT.md` at root:** Living, single-page index summarizing active initiatives, current architecture overview, and known constraints/gotchas.
