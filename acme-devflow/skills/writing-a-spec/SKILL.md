@@ -29,11 +29,19 @@ You are generating the technical blueprint for the system. If your blueprint is 
 ### Step 3: Technical Design / Architecture (Phase 3)
 
 - Once the spec is approved, draft `tickets/<ticket-id>/design.md`.
+- **UUID Routing & Security:** Auto-incrementing integer IDs (e.g. `id = 1`) MUST NOT be exposed in API routes, query parameters, or payloads. Use secure UUIDs (v4) or public UIDs for route resource lookups to prevent IDOR vulnerabilities.
+- **Database Indexing:** Ensure every foreign key, lookup UUID, and filter criteria field is indexed in the schema migrations to maintain query performance at production scale.
 - Explicitly detail DTO classes with validation, raw SQL migration queries (UP/DOWN), indexing, Next.js server/client component boundaries, and middleware changes.
 - Propose Architecture Decision Records (ADRs) for non-trivial decisions using the `adr.md` template. Save them in the ticket folder.
 - **✅ HUMAN CHECKPOINT #2 (Design Approval):** Stop and ask a senior engineer/architect to review and approve the design and any ADRs (Status -> `Approved`).
 
-### Step 4: Task Breakdown (Phase 4)
+### Step 4: Swagger API Specification (Phase 4)
+
+- Once the technical design is approved, draft precise OpenAPI/Swagger schemas.
+- Ensure that exposed resource endpoints utilize UUIDs or public secure tokens. Auto-incrementing IDs (`id=1`) are strictly forbidden in public parameters/paths.
+- **✅ HUMAN CHECKPOINT (Swagger Approval):** Stop and ask the architect to sign off on the Swagger API contracts. Do not generate code stubs or proceed to task planning until this is approved.
+
+### Step 5: Task Breakdown (Phase 5)
 
 - Break down the approved design into a Directed Acyclic Graph (DAG) task checklist in `tickets/<ticket-id>/tasks.md` based on the template.
 - Ensure each task is atomic and maps back to specific Spec Acceptance Criteria.

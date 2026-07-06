@@ -106,6 +106,8 @@ npx turbo run build
 ### 7.4 Zero-Trust Security & Auth Logic
 - **Hashing**: `bcrypt` is banned. Argon2 MUST be used for all password hashing.
 - **Tokens**: JWTs must NEVER be stored in `localStorage`, `sessionStorage`, memory variables, or indexDB on the frontend. They must be stored in `HttpOnly`, `Secure`, `SameSite=Strict` cookies ONLY.
+- **UUID Routing**: All public API resource lookup paths and body parameters MUST resolve entities using secure UUIDs (v4) or public tokens instead of auto-incrementing database integer keys (e.g. no sequential `id = 1` exposed in URL paths).
+- **Indexing**: Database migrations MUST explicitly index foreign keys, lookups, and query filters.
 - **Refresh Token Rotation**: Explicitly enforce refresh token rotation with immediate session revocation upon reuse detection.
 - **CSRF**: CSRF protection is mandatory for all non-GET requests.
 
