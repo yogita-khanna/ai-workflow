@@ -11,18 +11,29 @@ You must execute the implementation exactly as dictated by `tasks.md` in a stric
 3. **Never bypass Turborepo.** You must run tests via `pnpm turbo run test`.
 
 ## TOKEN & CONTEXT OPTIMIZATION (CRITICAL)
-- **Mandatory First Step**: You MUST read the `CLAUDE.md` file in the root of the repository before doing any work. This file holds the entire architecture context and strict coding standards. By reading it, you avoid having to scan the entire project to understand the stack.
-- **Strict Bounds**: Rely entirely on the architecture defined in `CLAUDE.md` and the `design.md` for this ticket. Do not explore directories outside of the modules you are assigned to implement.
-- **When tests fail, only read the specific error output.** Do not re-read the entire test file or run full-repo type checks if not necessary.
+- **Mandatory First Step**: You MUST read the `CONTEXT.md` file in the root of the repository before doing any work. This file holds the entire architecture context and active initiatives.
+- **Strict Bounds**: Rely entirely on the architecture defined in `CONTEXT.md` and the `design.md` for this ticket. Do not explore directories outside of the modules you are assigned to implement.
 
 ## Step-by-Step Guidance
-1. **Check `tasks.md`**: Identify the next incomplete task.
+
+### Phase 5: Implementation
+1. **Check `tasks.md`**: Identify the next incomplete task in the DAG.
 2. **Write the Failing Test (Red)**:
    - Backend Unit: `*.spec.ts`. Mock the raw `pg.Pool` repository layer.
    - Frontend Unit: `*.test.tsx` using React Testing Library.
-3. **Execute Test**: Run `pnpm turbo run test --filter=<workspace>` and verify it FAILS. (Using filters saves tokens by minimizing log output).
+   - Satisfy specific Spec Acceptance Criteria.
+3. **Execute Test**: Run `pnpm turbo run test --filter=<workspace>` and verify it FAILS.
 4. **Write the Implementation (Green)**:
    - Implement the raw SQL, NestJS service, or Next.js component.
 5. **Execute Test**: Run tests and verify they PASS.
-6. **Refactor**: Clean up code.
+6. **Refactor**: Clean up code and check styling constraints.
 7. **Mark Task Complete**: Update `[x]` in `tasks.md`.
+
+### Phase 6: Self-Review & Tests
+Once all tasks in `tasks.md` are marked complete, perform self-review:
+1. **Run Full Verification**: Run linting, type checks, and all tests via `pnpm turbo run lint test build` from root. Ensure 0 errors.
+2. **Perform Self-Diff Review**:
+   - Compare your git diff against the approved Spec Acceptance Criteria.
+   - Verify every acceptance criterion has a matching, passing test.
+   - Check for dead code, left-over `TODO`s, or debug logs.
+3. **Generate Session Summary**: Update or write the agent session summary (`docs/context/sessions/<date>-<feature>.md`).

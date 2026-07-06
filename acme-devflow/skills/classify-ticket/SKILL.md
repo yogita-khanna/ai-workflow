@@ -5,39 +5,23 @@ trigger: "Score a ticket's risk, reversibility, and precedent to determine if hu
 # Skill: classify-ticket
 
 ## Overview
-Every new ticket must be classified before implementation. We use three criteria to determine if a ticket can be automatically implemented (`auto-apply`) or requires human approval (`ask-human`).
+Every new ticket must be classified during Phase 1 (Discovery & Framing). We use three criteria to determine if a ticket can be automatically implemented (`auto-apply`) or requires human approval (`ask-human`).
 
 ## Step-by-Step Guidance
-1. **Evaluate Risk**: Does this touch auth, payments, or the core data model? (High Risk = `ask-human`). Is it a UI copy change or non-critical feature? (Low Risk).
-2. **Evaluate Reversibility**: Does it involve schema migrations with data? (Low Reversibility = `ask-human`). Is it hidden behind a feature flag? (High Reversibility).
-3. **Evaluate Precedent**: Has this repo built something structurally similar before? (No = `ask-human`, Yes = `auto-apply`).
-4. **Determine Score**: If ANY of the three criteria flag as `ask-human`, the overall score is `ask-human`.
+1. **Evaluate Risk (Security & Data):** Does this touch authentication, payments, encryption, or the core user data model? (High Risk = `ask-human`). Is it a UI copy change or non-critical improvement? (Low Risk).
+2. **Evaluate Reversibility (Schema & Rollback):** Does it involve schema migrations with data? Is it easy to rollback? (Low Reversibility = `ask-human`). Is it hidden behind a feature flag or easily revertible in a single PR? (High Reversibility).
+3. **Evaluate Precedent (Existing Patterns):** Has the codebase implemented something structurally similar before? (No = `ask-human`, Yes = `auto-apply`).
+4. **Determine Final Score:** If ANY of the three criteria are flagged as `ask-human` or equivalent, the overall score is `ask-human`.
 
-## Worked Examples
+## Ticket Classification Matrix
 
-**1. RBAC + Authentication**
-- **Risk**: High (touches core security, password hashing, JWTs).
-- **Reversibility**: Low (adds 5 core tables `users`, `roles`, etc. to the database).
-- **Precedent**: None (first auth implementation).
-- **Score**: `ask-human`.
+| Metric | High Risk / Low Reversibility | Low Risk / High Reversibility |
+| --- | --- | --- |
+| **Risk** | Security, payments, user-delete, core schema changes (`ask-human`) | Minor copy changes, style adjustments, isolated utilities (`auto-apply`) |
+| **Reversibility** | SQL schema migrations affecting live tables (`ask-human`) | Reversible client-side changes, new flags (`auto-apply`) |
+| **Precedent** | First-time features, new libraries or core integrations (`ask-human`) | Matching established structure (e.g. adding an endpoint following patterns) (`auto-apply`) |
 
-**2. Add new 'About Us' Copy to Footer**
-- **Risk**: Low (UI text only).
-- **Reversibility**: High (just revert the PR).
-- **Precedent**: Yes (standard React component update).
-- **Score**: `auto-apply`.
-
-**3. Add caching to User Profile endpoint**
-- **Risk**: Medium (caching could leak data if misconfigured).
-- **Reversibility**: High (can turn off caching flag).
-- **Precedent**: Yes (other endpoints use Redis cache).
-- **Score**: `ask-human` (due to data leak risk on a sensitive endpoint).
-
-**4. Add 'deleted_at' soft delete to 'products' table**
-- **Risk**: Medium.
-- **Reversibility**: Low (DB schema change on a core table with existing data).
-- **Precedent**: Yes (other tables have soft deletes).
-- **Score**: `ask-human` (due to low reversibility schema migration).
-
-## Common Mistakes to Avoid
-- **Underestimating Reversibility**: Any change involving `.sql` migrations via `node-pg-migrate` is automatically low reversibility if it runs on production data. Always score it `ask-human` unless it's explicitly purely additive and isolated.
+## Verification & Scoring
+Fill in Section 6 of `spec.md` with this classification.
+If the Verdict is `ask-human`, this blocks Phase 3 (Technical Design) and requires **Checkpoint #1 (Spec Approval)** signature.
+If the Verdict is `auto-apply`, the agent can proceed autonomously, but must still complete design and tasks checklist files.
