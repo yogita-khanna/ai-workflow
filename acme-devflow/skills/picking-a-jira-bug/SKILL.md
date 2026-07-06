@@ -14,7 +14,7 @@ Integrates with Jira to fetch unassigned or high-priority bugs for the current s
 2. **Execute JQL Query**: Run a query prioritizing High/Critical severity bugs in the 'To Do' state.
    - `project = ACME AND issuetype = Bug AND status = "To Do" ORDER BY priority DESC, created ASC`
 3. **Display Format**: Present bugs to the human in the following format for selection:
-   - `[Ticket Key] - Title (Priority) - Assigned to: Unassigned`
+   - `\[Ticket Key\] - Title (Priority) - Assigned to: Unassigned`
 4. **Assign & Transition**: Once picked, assign the ticket to the current user and transition to 'In Progress'.
 
 ## Worked Example

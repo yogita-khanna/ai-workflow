@@ -19,11 +19,11 @@ _Required PR Body Structure:_
 ```markdown
 ## Spec Link
 
-Resolves: [Link to spec in docs/context/specs/]
+Resolves: \[Link to spec in docs/context/specs/\]
 
 ## What Changed
 
-[Brief summary of implementation]
+\[Brief summary of implementation\]
 
 ## Verification & Test Results
 
