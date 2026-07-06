@@ -34,6 +34,7 @@ Review the code diff against these specific parameters:
 
 - **SQL Injection Risk (Critical):** Verify all raw SQL uses parameterized variables (`$1, $2`). Concatenation (`+`) or template literals (`${}`) inside SQL query strings are strictly banned.
 - **Route Protection (NestJS):** New controllers must have `@UseGuards(JwtAuthGuard)` or `@Roles()`.
+- **JWT Storage (Critical):** Verify that JWT tokens are stored in Cookies ONLY (`HttpOnly`, `Secure`, `SameSite=Strict`). They must NEVER be stored in localStorage, sessionStorage, memory variables, or indexDB on the frontend.
 - **SSR Data Leaks (Next.js):** Sensitive data (hashes, keys) must not leak from RSC to client components.
 - No secrets, credentials, or PII in code/logs.
 
